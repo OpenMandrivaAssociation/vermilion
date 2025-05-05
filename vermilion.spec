@@ -1,0 +1,51 @@
+%global debug_package %{nil}
+%global commit 9b84b995510dd17d60685aab5f466c244c575f3f
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+
+Name:		vermilion
+Version:	1.git%{shortcommit}
+Release:	1
+Source0:	https://github.com/vaxerski/vermilion/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source1:    vermilion-node_modules.tar.gz
+
+Source2:    %{name}.desktop
+Source3:    https://github.com/castlabs/electron-releases/releases/download/v35.1.5+wvcus/electron-v35.1.5+wvcus-linux-x64.zip
+Summary:	Vermilion is a clean, minimal and simple music player for MPD, Tidal, Spotify and more.
+URL:		https://github.com/vaxerski/vermilion
+License:	BSD-3-Clause
+Group:		Applications/Music
+
+BuildRequires:	pnpm
+BuildRequires:	nodejs-electron-builder
+
+%description
+Vermilion is a clean, minimal and simple music player for MPD, Tidal, Spotify and more.
+
+%prep
+%autosetup -n Vermilion-%{commit} -p1
+tar -xzf %{SOURCE1}
+mkdir -p %{builddir}/Vermilion-%{commit}/electron_cache
+cp %{SOURCE3} %{builddir}/Vermilion-%{commit}/electron_cache
+
+%build
+pnpm config set store-dir %{_builddir}/Vermilion-%{commit}/node_modules
+pnpm i --frozen --force --offline
+pnpm run build
+ELECTRON_CACHE=%{builddir}/Vermilion-%{commit}/electron_cache electron-builder --dir
+
+%install
+install -d %{buildroot}%{_datadir}/applications/ %{buildroot}%{_datadir}/%{name} %{buildroot}%{_bindir}
+cp -r dist/*-unpacked/* %{buildroot}%{_datadir}/%{name}
+install -Dm755 %{SOURCE2} %{buildroot}%{_datadir}/applications/
+install -Dm644 assets/logo.png %{buildroot}%{_datadir}/pixmaps/vermilion.png
+install -Dm644 assets/logo256.png %{buildroot}%{_iconsdir}/hicolor/256x256/app/%{name}.png
+install -Dm644 assets/logo1024.png %{buildroot}%{_iconsdir}/hicolor/1024x1024/app/%{name}.png
+ln -s %{_datadir}/%{name}/%{name} %{buildroot}%{_bindir}/%{name}
+
+%files
+%{_bindir}/%{name}
+%{_iconsdir}/hicolor/256x256/app/%{name}.png
+%{_iconsdir}/hicolor/1024x1024/app/%{name}.png
+%{_datadir}/pixmaps/vermilion.png
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/%{name}

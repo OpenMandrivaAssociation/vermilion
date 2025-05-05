@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=vermilion
+Exec=vermilion
+Terminal=false
+Type=Application
+Icon=vermilion
+StartupWMClass=vermilion
+X-AppImage-Version=0.1.0
+entry=[object Object]
+Comment=A simple, modern music player.
+Categories=AudioVideo;
