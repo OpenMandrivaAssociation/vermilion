@@ -6,7 +6,7 @@ Name:		vermilion
 Version:	1.git%{shortcommit}
 Release:	1
 Source0:	https://github.com/vaxerski/vermilion/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-Source1:    vermilion-node_modules.tar.gz
+Source1:    vermilion-pnpm-store.tar.gz
 
 Source2:    %{name}.desktop
 Source3:    https://github.com/castlabs/electron-releases/releases/download/v35.1.5+wvcus/electron-v35.1.5+wvcus-linux-x64.zip
@@ -28,8 +28,8 @@ mkdir -p %{builddir}/Vermilion-%{commit}/electron_cache
 cp %{SOURCE3} %{builddir}/Vermilion-%{commit}/electron_cache
 
 %build
-pnpm config set store-dir %{_builddir}/Vermilion-%{commit}/node_modules
-pnpm i --frozen --force --offline
+pnpm config set store-dir %{_builddir}/Vermilion-%{commit}/pnpm-store
+pnpm install --frozen-lockfile --offline
 pnpm run build
 ELECTRON_CACHE=%{builddir}/Vermilion-%{commit}/electron_cache electron-builder --dir
 
