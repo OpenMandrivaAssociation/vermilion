@@ -7,9 +7,7 @@ Version:	1.git%{shortcommit}
 Release:	1
 Source0:	https://github.com/vaxerski/vermilion/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:    vermilion-pnpm-store.tar.gz
-
 Source2:    %{name}.desktop
-Source3:    https://github.com/castlabs/electron-releases/releases/download/v35.1.5+wvcus/electron-v35.1.5+wvcus-linux-x64.zip
 Summary:	Vermilion is a clean, minimal and simple music player for MPD, Tidal, Spotify and more.
 URL:		https://github.com/vaxerski/vermilion
 License:	BSD-3-Clause
@@ -17,6 +15,7 @@ Group:		Applications/Music
 
 BuildRequires:	pnpm
 BuildRequires:	nodejs-electron-builder
+BuildRequires:	castlabs-electron-releases-35.1.5+wvcus
 
 %description
 Vermilion is a clean, minimal and simple music player for MPD, Tidal, Spotify and more.
@@ -25,13 +24,12 @@ Vermilion is a clean, minimal and simple music player for MPD, Tidal, Spotify an
 %autosetup -n Vermilion-%{commit} -p1
 tar -xzf %{SOURCE1}
 mkdir -p %{builddir}/Vermilion-%{commit}/electron_cache
-cp %{SOURCE3} %{builddir}/Vermilion-%{commit}/electron_cache
 
 %build
 pnpm config set store-dir %{_builddir}/Vermilion-%{commit}/pnpm-store
 pnpm install --frozen-lockfile --offline
 pnpm run build
-ELECTRON_CACHE=%{builddir}/Vermilion-%{commit}/electron_cache electron-builder --dir
+ELECTRON_CACHE=%{_prefix}/src/electron electron-builder --dir
 
 %install
 install -d %{buildroot}%{_datadir}/applications/ %{buildroot}%{_datadir}/%{name} %{buildroot}%{_bindir}
